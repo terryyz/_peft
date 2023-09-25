@@ -149,13 +149,13 @@ def set_peft_model_state_dict(model, peft_model_state_dict, adapter_name="defaul
                 model.resize_modules_by_rank_pattern(rank_pattern, adapter_name)
     elif config.is_prompt_learning or config.peft_type == PeftType.ADAPTION_PROMPT:
         peft_model_state_dict = state_dict
-    elif config.peft_type == PeftType.BOTTENECK:
+    elif config.peft_type == PeftType.BOTTLENECK:
         pass
     else:
         raise NotImplementedError
 
     load_result = model.load_state_dict(peft_model_state_dict, strict=False)
-    if config.is_prompt_learning or (config.peft_type != PeftType.LORA and config.peft_type != PeftType.BOTTLENECK) :
+    if config.is_prompt_learning:
         model.prompt_encoder[adapter_name].embedding.load_state_dict(
             {"weight": peft_model_state_dict["prompt_embeddings"]}, strict=True
         )
